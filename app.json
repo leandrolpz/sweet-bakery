@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Sweet Bakery",
+    "slug": "sweet-bakery",
+    "version": "1.0.0",
+    "scheme": "sweetbakery",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": ["expo-router"],
+    "web": { "bundler": "metro", "output": "single" }
+  }
+}
