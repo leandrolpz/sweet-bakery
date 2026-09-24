@@ -67,7 +67,7 @@ function toDoc(def: CollectionDef, form: Form, original?: Row) {
       case 'money': data[f.key] = parseNumber(v) ?? 0; break;
       case 'boolean': data[f.key] = !!v; break;
       case 'orderItems':
-        data[f.key] = (v as any[]).map((i) => ({ product: i.product, quantity: i.quantity, notes: i.notes ?? '' }));
+        data[f.key] = (v as any[]).map((i) => ({ produtoId_REF: i.product?.id ?? i.produtoId_REF ?? '', amount: Number(i.quantity ?? i.amount ?? 1), price: Number(i.product?.price ?? i.price ?? 0) }));
         break;
       case 'date': data[f.key] = brToIso(String(v), original?.[f.key]) ?? ''; break;
       default: data[f.key] = String(v ?? '').trim();
@@ -150,7 +150,7 @@ export function CrudForm({ def, id }: { def: CollectionDef; id?: string }) {
         <Loading />
       ) : notFound ? (
         <Card>
-          <EmptyState emoji="🔎" title={`${capitalize(def.singular)} não encontrad${def.feminine ? 'a' : 'o'}`} text="Ele pode ter sido excluído por outra pessoa.">
+          <EmptyState icon="search" title={`${capitalize(def.singular)} não encontrad${def.feminine ? 'a' : 'o'}`} text="Ele pode ter sido excluído por outra pessoa.">
             <Button label="Voltar para a lista" variant="secondary" onPress={goList} />
           </EmptyState>
         </Card>

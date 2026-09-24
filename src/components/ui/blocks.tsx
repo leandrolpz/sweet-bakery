@@ -4,6 +4,7 @@ import { colors, radius } from '@/src/constants/theme';
 import { useLayout } from '@/src/hooks/useLayout';
 import type { ThumbDef } from '@/src/collections/types';
 import { T } from './Text';
+import { Icon } from './Icon';
 
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
   return <View style={[s.card, style]}>{children}</View>;
@@ -31,10 +32,13 @@ export function Thumb({ thumb, size = 56 }: { thumb: ThumbDef; size?: number }) 
       />
     );
   }
+  if (thumb.emoji && /^[a-z-]+$/.test(thumb.emoji)) {
+    return <View style={[box, s.center]}><Icon name={thumb.emoji as any} size={size * 0.5} /></View>;
+  }
   return (
     <View style={[box, s.center]}>
       <T style={{ fontSize: size * 0.48, lineHeight: size * 0.6, color: thumb.color ?? colors.morangoEscuro }}>
-        {thumb.emoji ?? thumb.text ?? '🍰'}
+        {thumb.emoji ?? thumb.text ?? '-'}
       </T>
     </View>
   );
@@ -50,11 +54,11 @@ export function Loading({ text = 'Carregando…' }: { text?: string }) {
 }
 
 export function EmptyState({
-  emoji, title, text, children,
-}: { emoji: string; title: string; text?: string; children?: ReactNode }) {
+  emoji, icon, title, text, children,
+}: { emoji?: string; icon?: string; title: string; text?: string; children?: ReactNode }) {
   return (
     <View style={s.empty}>
-      <T style={{ fontSize: 52, lineHeight: 64 }}>{emoji}</T>
+      {icon ? <Icon name={icon as any} size={52} /> : emoji ? <T style={{ fontSize: 52, lineHeight: 64 }}>{emoji}</T> : null}
       <T v="title" style={{ textAlign: 'center' }}>{title}</T>
       {text ? <T color={colors.textoSuave} style={{ textAlign: 'center', maxWidth: 420 }}>{text}</T> : null}
       {children ? <View style={{ marginTop: 8 }}>{children}</View> : null}

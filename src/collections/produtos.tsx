@@ -7,7 +7,7 @@ export const produtos: CollectionDef = {
   key: 'produtos',
   label: 'Produtos',
   singular: 'produto',
-  emoji: '🍰',
+  emoji: 'products',
   description: 'Bolos, doces e tortas à venda',
   feminine: false,
   sort: byName,
@@ -15,8 +15,8 @@ export const produtos: CollectionDef = {
   fields: [
     { key: 'name', label: 'Nome do produto', type: 'text', required: true, placeholder: 'Ex.: Bolo de cenoura com chocolate', capitalize: 'words' },
     {
-      key: 'categoryId', label: 'Categoria', type: 'relation', required: true, half: true, placeholder: 'Escolha a categoria',
-      relation: { collection: 'categorias', label: (r) => r.name ?? 'Sem nome', emoji: (r) => r.icon ?? '🏷️' },
+      key: 'categoryId_REF', label: 'Categoria', type: 'relation', required: true, half: true, placeholder: 'Escolha a categoria',
+      relation: { collection: 'categorias', label: (r) => r.name ?? 'Sem nome' },
     },
     { key: 'price', label: 'Preço', type: 'money', required: true, half: true, min: 0 },
     { key: 'description', label: 'Descrição', type: 'textarea', placeholder: 'Conte o que torna esse doce especial' },
@@ -29,12 +29,17 @@ export const produtos: CollectionDef = {
   list: {
     title: (r) => r.name || 'Sem nome',
     subtitle: (r, ctx) => {
-      const c = ctx.lookups.categorias?.find((x) => x.id === r.categoryId);
-      return c ? `${c.icon ?? ''} ${c.name}`.trim() : 'Sem categoria';
+      const c = ctx.lookups.categorias?.find((x) => x.id === r.categoryId_REF);
+      return c?.name ?? 'Sem categoria';
     },
     thumb: (r, ctx) => {
-      const c = ctx.lookups.categorias?.find((x) => x.id === r.categoryId);
-      return { imageUrl: /^https?:\/\//i.test(r.image ?? '') ? r.image : undefined, emoji: c?.icon ?? '🍰' };
+      const category = ctx.lookups.categorias?.find((x) => x.id === r.categoryId_REF);
+      return {
+        imageUrl: /^https?:\/\//i.test(r.image ?? '') ? r.image : undefined,
+        emoji: category?.icon ?? 'category',
+        bg: category?.bgColor ?? colors.morangoSuave,
+        color: category?.color ?? colors.morango,
+      };
     },
     value: (r) => money(r.price),
     badge: (r) => (r.bestseller ? { label: '⭐ Mais vendido', color: colors.caramelo, bg: colors.carameloSuave } : null),

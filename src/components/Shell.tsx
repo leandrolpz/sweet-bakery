@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import {
   Animated, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View,
 } from 'react-native';
-import { Link, usePathname } from 'expo-router';
+import { Link, router, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLLECTIONS } from '@/src/collections';
@@ -10,13 +10,16 @@ import { colors, radius, SIDEBAR_WIDTH } from '@/src/constants/theme';
 import { useLayout } from '@/src/hooks/useLayout';
 import { Awning } from './ui/Awning';
 import { T } from './ui/Text';
+import { Icon } from './ui/Icon';
+import { auth } from '@/src/services/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const ACCENT = '#FF8FB0'; // rosa claro, legível sobre o chocolate
 
 function Brand() {
   return (
     <View style={s.brand}>
-      <T style={{ fontSize: 30, lineHeight: 36 }}>🧁</T>
+      <Icon name="cake" size={30} color={ACCENT} />
       <View>
         <T v="title" color="#fff" style={{ lineHeight: 26 }}>Sweet Bakery</T>
         <T v="small" color={colors.noCacauSuave}>Sistema da confeitaria</T>
@@ -42,7 +45,7 @@ function MenuLink({ href, label, icon, active, indent }: { href: string; label: 
         ])}
       >
         {active ? <View style={s.activeBar} /> : null}
-        {icon ? <T style={{ fontSize: 20, width: 28 }}>{icon}</T> : null}
+        {icon ? <Icon name={icon as any} size={20} color={active ? ACCENT : colors.noCacau} /> : null}
         <T v={indent ? 'body' : 'bodyStrong'} color={active ? '#fff' : colors.noCacau}>{label}</T>
       </Pressable>
     </Link>
@@ -58,7 +61,7 @@ function MenuList() {
 
   return (
     <View style={{ gap: 4 }}>
-      <MenuLink href="/" label="Início" icon="🏠" active={path === '/'} />
+      <MenuLink href="/painel" label="Início" icon="home" active={path === '/painel'} />
       <T v="small" color={colors.noCacauSuave} style={s.menuTitle}>Cadastros</T>
       {COLLECTIONS.map((c) => {
         const isOpen = !!open[c.key];
@@ -72,14 +75,14 @@ function MenuList() {
               onPress={() => setOpen((o) => ({ ...o, [c.key]: !o[c.key] }))}
               style={(st) => [s.item, (st as any).hovered && { backgroundColor: 'rgba(255,255,255,0.06)' }]}
             >
-              <T style={{ fontSize: 20, width: 28 }}>{c.emoji}</T>
+              <Icon name={c.emoji as any} size={20} color={activeKey === c.key ? ACCENT : colors.noCacau} />
               <T v="bodyStrong" color={activeKey === c.key ? '#fff' : colors.noCacau} style={{ flex: 1 }}>{c.label}</T>
-              <T color={colors.noCacauSuave}>{isOpen ? '▾' : '▸'}</T>
+              <Icon name={isOpen ? 'expand-more' : 'chevron-right'} size={20} color={colors.noCacauSuave} />
             </Pressable>
             {isOpen ? (
               <View style={{ gap: 2, marginBottom: 6 }}>
-                <MenuLink indent href={`/${c.key}/novo`} label={`Cadastrar ${c.singular}`} active={onNew} />
-                <MenuLink indent href={`/${c.key}`} label="Listar / Alterar / Excluir" active={onList} />
+                <MenuLink indent href={`/${c.key}/novo`} label={`Cadastrar ${c.singular}`} icon="add" active={onNew} />
+                <MenuLink indent href={`/${c.key}`} label="Listar / Alterar / Excluir" icon="edit" active={onList} />
               </View>
             ) : null}
           </View>
@@ -144,7 +147,16 @@ export function Shell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const insets = useSafeAreaInsets();
   const [drawer, setDrawer] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
   const scroll = useRef<ScrollView>(null);
+  const isPublic = path === '/' || path === '/login' || path === '/cadastro';
+
+  useEffect(() => onAuthStateChanged(auth, (user) => {
+    setSignedIn(!!user);
+    setAuthReady(true);
+    if (!user && !isPublic) router.replace('/login');
+  }), [isPublic]);
 
   useEffect(() => {
     setDrawer(false);
@@ -164,6 +176,12 @@ export function Shell({ children }: { children: ReactNode }) {
     </KeyboardAvoidingView>
   );
 
+  if (isPublic) {
+    return <View style={s.publicRoot}><StatusBar style="dark" />{children}</View>;
+  }
+
+  if (!authReady || !signedIn) return <View style={s.publicRoot}><StatusBar style="dark" /></View>;
+
   if (isDesktop) {
     return (
       <View style={s.root}>
@@ -180,7 +198,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <Pressable onPress={() => setDrawer(true)} accessibilityRole="button" accessibilityLabel="Abrir menu" style={s.iconBtn}>
           <T style={{ fontSize: 24, color: '#fff', lineHeight: 28 }}>☰</T>
         </Pressable>
-        <T v="title" color="#fff" style={{ fontSize: 20 }}>🧁 Sweet Bakery</T>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}><Icon name="cake" size={22} color={ACCENT} /><T v="title" color="#fff" style={{ fontSize: 20 }}>Sweet Bakery</T></View>
       </View>
       {page}
       <Drawer open={drawer} onClose={() => setDrawer(false)} />
@@ -190,6 +208,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
 const s = StyleSheet.create({
   root: { flex: 1, flexDirection: 'row', backgroundColor: colors.chantilly },
+  publicRoot: { flex: 1, backgroundColor: colors.chantilly },
   sidebar: { width: SIDEBAR_WIDTH, backgroundColor: colors.cacau, paddingHorizontal: 14, paddingTop: 28 },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 8, paddingBottom: 24 },
   menuTitle: { paddingHorizontal: 12, paddingTop: 18, paddingBottom: 6 },

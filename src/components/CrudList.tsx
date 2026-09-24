@@ -13,6 +13,7 @@ import { Box, Chip } from './inputs';
 import { Badge, Banner, Card, EmptyState, Loading, PageHeader, Thumb } from './ui/blocks';
 import { Button } from './ui/Button';
 import { T } from './ui/Text';
+import { Icon } from './ui/Icon';
 
 /** Tela LISTAR / ALTERAR / EXCLUIR de uma collection. */
 export function CrudList({ def }: { def: CollectionDef }) {
@@ -69,7 +70,7 @@ export function CrudList({ def }: { def: CollectionDef }) {
   }
 
   const newButton = (
-    <Button label={`Cadastrar ${def.singular}`} icon="＋" onPress={() => router.push(`/${def.key}/novo` as any)} />
+    <Button label={`Cadastrar ${def.singular}`} icon="add" onPress={() => router.push(`/${def.key}/novo` as any)} />
   );
 
   return (
@@ -104,7 +105,7 @@ export function CrudList({ def }: { def: CollectionDef }) {
                 placeholder={`Buscar ${def.label.toLowerCase()}…`}
                 autoCorrect={false}
                 accessibilityLabel="Buscar"
-                prefix="🔍"
+                prefix={<Icon name="search" size={19} />}
               />
             </View>
           </View>
@@ -120,7 +121,7 @@ export function CrudList({ def }: { def: CollectionDef }) {
 
           {visible.length === 0 ? (
             <Card>
-              <EmptyState emoji="🔎" title="Nada encontrado" text="Tente outra palavra ou limpe os filtros.">
+              <EmptyState icon="search" title="Nada encontrado" text="Tente outra palavra ou limpe os filtros.">
                 <Button label="Limpar busca" variant="secondary" onPress={() => { setQ(''); setStatusFilter('all'); }} />
               </EmptyState>
             </Card>
@@ -159,13 +160,13 @@ export function CrudList({ def }: { def: CollectionDef }) {
                       <View style={s.actions}>
                         <Button
                           label="Alterar"
-                          icon="✏️"
+                          icon="edit"
                           size="sm"
                           variant="secondary"
                           style={{ flex: 1 }}
                           onPress={() => router.push(`/${def.key}/editar/${row.id}` as any)}
                         />
-                        <Button label="Excluir" icon="🗑️" size="sm" variant="danger" style={{ flex: 1 }} onPress={() => onDelete(row)} />
+                        <Button label="Excluir" icon="delete" size="sm" variant="danger" style={{ flex: 1 }} onPress={() => onDelete(row)} />
                       </View>
                     </Card>
                   </View>

@@ -111,7 +111,7 @@ export function FieldRenderer(props: FieldRendererProps) {
     case 'emoji':
       return (
         <FieldShell field={field} error={error}>
-          <Box value={String(value ?? '')} onChangeText={set} placeholder="🍰" invalid={invalid} style={{ fontSize: 22 }} />
+          <Box value={String(value ?? '')} onChangeText={set} placeholder="Ícone" invalid={invalid} style={{ fontSize: 22 }} />
           <View style={s.chips}>
             {(field.suggestions ?? []).map((e) => (
               <Pressable

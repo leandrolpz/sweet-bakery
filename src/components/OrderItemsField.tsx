@@ -28,8 +28,10 @@ export function OrderItemsField({
   const { rows: products, loading } = useCollection('produtos');
   const [picker, setPicker] = useState(false);
 
+  const productFor = (item: OrderItem) => item.product ?? products.find((product) => product.id === (item as any).produtoId_REF);
+  const quantityFor = (item: OrderItem) => Number((item as any).quantity ?? (item as any).amount ?? 1);
   const sum = (list: OrderItem[]) =>
-    round2(list.reduce((acc, i) => acc + (Number(i.product?.price) || 0) * i.quantity, 0));
+    round2(list.reduce((acc, i) => acc + (Number(productFor(i)?.price ?? (i as any).price) || 0) * quantityFor(i), 0));
   const subtotal = sum(items);
 
   // Pedido novo: taxa de entrega padrão R$ 8,00 (a mesma do app original).
@@ -59,27 +61,30 @@ export function OrderItemsField({
       <View style={{ gap: 10 }}>
         {items.length === 0 ? (
           <View style={s.empty}>
-            <T style={{ fontSize: 32, lineHeight: 40 }}>🧁</T>
+            <T v="heading" color={colors.morango}>Nenhum item</T>
             <T color={colors.textoSuave} style={{ textAlign: 'center' }}>
               Nenhum produto neste pedido ainda.
             </T>
           </View>
         ) : (
-          items.map((it, i) => (
-            <View key={`${it.product?.id ?? i}`} style={s.item}>
+            items.map((it, i) => {
+              const product = productFor(it);
+              const quantity = quantityFor(it);
+              return (
+            <View key={`${product?.id ?? (it as any).produtoId_REF ?? i}`} style={s.item}>
               <View style={s.itemTop}>
                 <Thumb
                   size={48}
-                  thumb={{ imageUrl: it.product?.image?.startsWith?.('http') ? it.product.image : undefined, emoji: '🍰' }}
+                  thumb={{ imageUrl: product?.image?.startsWith?.('http') ? product.image : undefined, text: 'P' }}
                 />
                 <View style={{ flex: 1 }}>
-                  <T v="bodyStrong">{it.product?.name ?? 'Produto'}</T>
-                  <T v="small" color={colors.textoSuave}>{money(it.product?.price)} cada</T>
+                  <T v="bodyStrong">{product?.name ?? 'Produto'}</T>
+                  <T v="small" color={colors.textoSuave}>{money(product?.price ?? (it as any).price)} cada</T>
                 </View>
                 <Pressable
                   onPress={() => remove(i)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Remover ${it.product?.name ?? 'produto'}`}
+                  accessibilityLabel={`Remover ${product?.name ?? 'produto'}`}
                   style={s.remove}
                 >
                   <T v="label" color={colors.perigo}>Remover</T>
@@ -88,15 +93,15 @@ export function OrderItemsField({
 
               <View style={s.itemMid}>
                 <View style={s.stepper}>
-                  <Pressable onPress={() => setQty(i, it.quantity - 1)} accessibilityRole="button" accessibilityLabel="Diminuir quantidade" style={s.stepBtn}>
+                  <Pressable onPress={() => setQty(i, quantity - 1)} accessibilityRole="button" accessibilityLabel="Diminuir quantidade" style={s.stepBtn}>
                     <T v="heading">−</T>
                   </Pressable>
-                  <T v="heading" style={{ minWidth: 28, textAlign: 'center' }}>{it.quantity}</T>
-                  <Pressable onPress={() => setQty(i, it.quantity + 1)} accessibilityRole="button" accessibilityLabel="Aumentar quantidade" style={s.stepBtn}>
+                  <T v="heading" style={{ minWidth: 28, textAlign: 'center' }}>{quantity}</T>
+                  <Pressable onPress={() => setQty(i, quantity + 1)} accessibilityRole="button" accessibilityLabel="Aumentar quantidade" style={s.stepBtn}>
                     <T v="heading">+</T>
                   </Pressable>
                 </View>
-                <T v="heading" color={colors.morango}>{money((Number(it.product?.price) || 0) * it.quantity)}</T>
+                <T v="heading" color={colors.morango}>{money((Number(product?.price ?? (it as any).price) || 0) * quantity)}</T>
               </View>
 
               <Box
@@ -106,10 +111,11 @@ export function OrderItemsField({
                 style={{ fontSize: 14 }}
               />
             </View>
-          ))
+              );
+            })
         )}
 
-        <Button label="Adicionar produto" icon="＋" variant="secondary" onPress={() => setPicker(true)} />
+        <Button label="Adicionar produto" icon="add" variant="secondary" onPress={() => setPicker(true)} />
 
         <View style={s.totals}>
           <View style={s.line}>
@@ -140,7 +146,7 @@ export function OrderItemsField({
         title="Adicionar produto"
         loading={loading}
         emptyText="Nenhum produto cadastrado. Cadastre produtos primeiro."
-        options={products.map((p) => ({ value: p.id, label: p.name ?? 'Sem nome', sublabel: money(p.price), emoji: '🍰' }))}
+        options={products.map((p) => ({ value: p.id, label: p.name ?? 'Sem nome', sublabel: money(p.price) }))}
         onSelect={(o) => { const p = products.find((x) => x.id === o.value); if (p) add(p); }}
         onClose={() => setPicker(false)}
       />

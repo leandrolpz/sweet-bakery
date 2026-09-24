@@ -5,6 +5,7 @@ import { colors, radius } from '@/src/constants/theme';
 import type { CollectionDef } from '@/src/collections/types';
 import { useLayout } from '@/src/hooks/useLayout';
 import { T } from './ui/Text';
+import { Icon } from './ui/Icon';
 
 /** Abas no topo de cada cadastro: deixa claro que existem duas telas (listar e cadastrar). */
 function Tab({ href, label, icon, active, grow }: { href: string; label: string; icon: string; active: boolean; grow?: boolean }) {
@@ -19,7 +20,7 @@ function Tab({ href, label, icon, active, grow }: { href: string; label: string;
         onHoverOut={() => setHover(false)}
         style={StyleSheet.flatten([s.tab, grow && { flex: 1, alignItems: 'center' as const }, active && s.tabOn, !active && hover && { backgroundColor: colors.morangoSuave }])}
       >
-        <T v="label" color={active ? '#fff' : colors.texto} numberOfLines={1}>{icon}  {label}</T>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}><Icon name={icon as any} size={17} /><T v="label" color={active ? '#fff' : colors.texto} numberOfLines={1}>{label}</T></View>
       </Pressable>
     </Link>
   );
@@ -32,8 +33,8 @@ export function CollectionTabs({ def }: { def: CollectionDef }) {
   // No celular os rótulos são curtos para caber lado a lado; o menu mantém os nomes completos.
   return (
     <View style={[s.wrap, isPhone && { alignSelf: 'stretch' }]} accessibilityRole="tablist">
-      <Tab grow={isPhone} href={`/${def.key}`} icon="📋" label={isPhone ? 'Listar' : 'Listar / Alterar / Excluir'} active={!onNew} />
-      <Tab grow={isPhone} href={`/${def.key}/novo`} icon="＋" label={isPhone ? 'Cadastrar' : `Cadastrar ${def.singular}`} active={onNew} />
+      <Tab grow={isPhone} href={`/${def.key}`} icon="edit" label={isPhone ? 'Listar' : 'Listar / Alterar / Excluir'} active={!onNew} />
+      <Tab grow={isPhone} href={`/${def.key}/novo`} icon="add" label={isPhone ? 'Cadastrar' : `Cadastrar ${def.singular}`} active={onNew} />
     </View>
   );
 }

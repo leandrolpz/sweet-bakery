@@ -22,7 +22,26 @@ npx expo start -c      # pressione W (web), A (Android) ou I (iOS)
 
 Comandos úteis: `npm run web`, `npm run typecheck`.
 
-> As regras do Firestore precisam permitir leitura e escrita nas 5 collections.
+## Firebase: primeiro acesso
+
+O cadastro e o login usam o Firebase Authentication com e-mail e senha. No Firebase
+Console, abra **Authentication > Sign-in method** e ative **Email/Password**.
+
+As telas internas exigem um usuário autenticado. Para que o listar, cadastrar, alterar
+e excluir funcionem, publique as regras que estão em `firestore.rules`:
+
+```bash
+npx firebase login
+npx firebase use sweet-bakery-2a724
+npx firebase deploy --only firestore:rules
+```
+
+Se `firebase use` informar que o projeto não foi encontrado, confirme que a conta
+usada em `firebase login` tem acesso ao projeto `sweet-bakery-2a724`. O arquivo
+`firebase.json` já aponta para as regras corretas.
+
+Depois de publicar as regras, reinicie o Expo com `npx expo start -c` e faça login
+novamente para renovar a sessão.
 
 ## Estrutura
 

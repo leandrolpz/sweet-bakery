@@ -13,37 +13,19 @@ export const categorias: CollectionDef = {
   key: 'categorias',
   label: 'Categorias',
   singular: 'categoria',
-  emoji: '🏷️',
+  emoji: 'category',
   description: 'Organize o cardápio em grupos',
   feminine: true,
   sort: byName,
   fields: [
     { key: 'name', label: 'Nome da categoria', type: 'text', required: true, placeholder: 'Ex.: Bolos', capitalize: 'words' },
-    {
-      key: 'icon', label: 'Ícone', type: 'emoji', required: true, defaultValue: () => '🍰',
-      suggestions: ['🍰', '🧁', '🎂', '🍩', '🍪', '🥧', '🍫', '🍮', '🥐', '🍓', '🍬', '🍨'],
-    },
-    { key: 'color', label: 'Cor do texto', type: 'color', required: true, half: true, palette: TEXT_COLORS, defaultValue: () => TEXT_COLORS[0], validate: validateHex },
-    { key: 'bgColor', label: 'Cor de fundo', type: 'color', required: true, half: true, palette: BG_COLORS, defaultValue: () => BG_COLORS[0], validate: validateHex },
   ],
-  formPreview: (f) => (
-    <View
-      style={{
-        flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: radius.lg,
-        backgroundColor: safeColor(f.bgColor, colors.morangoSuave),
-      }}
-    >
-      <T style={{ fontSize: 32, lineHeight: 40 }}>{f.icon || '🍰'}</T>
-      <T v="heading" color={safeColor(f.color, colors.morango)}>{f.name || 'Nome da categoria'}</T>
-    </View>
-  ),
   list: {
     title: (r) => r.name || 'Sem nome',
-    thumb: (r) => ({ emoji: r.icon, bg: safeColor(r.bgColor, colors.morangoSuave) }),
-    details: (r) => compact([['Cor do texto', r.color], ['Cor de fundo', r.bgColor]]),
+    thumb: () => ({ emoji: 'category', bg: colors.morangoSuave, color: colors.morango }),
   },
   deleteWarning: async (row) => {
-    const n = await countWhere('produtos', 'categoryId', row.id);
+    const n = await countWhere('produtos', 'categoryId_REF', row.id);
     return n > 0 ? `Atenção: ${n} produto${n > 1 ? 's usam' : ' usa'} esta categoria e ficará${n > 1 ? 'ão' : ''} sem categoria.` : null;
   },
 };

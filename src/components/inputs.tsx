@@ -7,6 +7,7 @@ import type { FieldDef, Option } from '@/src/collections/types';
 import { norm } from '@/src/utils/format';
 import { Loading } from './ui/blocks';
 import { T } from './ui/Text';
+import { Icon } from './ui/Icon';
 
 const noOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none', outlineWidth: 0 } as any) : undefined;
 
@@ -28,7 +29,7 @@ export function FieldShell({ field, error, children }: { field: FieldDef; error?
 /** Caixa de texto padrão do sistema. */
 export function Box({
   invalid, prefix, suffix, multiline, style, onFocus, onBlur, ...rest
-}: TextInputProps & { invalid?: boolean; prefix?: string; suffix?: ReactNode }) {
+}: TextInputProps & { invalid?: boolean; prefix?: ReactNode; suffix?: ReactNode }) {
   const [focus, setFocus] = useState(false);
   return (
     <View
@@ -39,7 +40,7 @@ export function Box({
         multiline && { alignItems: 'flex-start' },
       ]}
     >
-      {prefix ? <T v="bodyStrong" color={colors.textoSuave}>{prefix}</T> : null}
+      {prefix ? (typeof prefix === 'string' ? <T v="bodyStrong" color={colors.textoSuave}>{prefix}</T> : prefix) : null}
       <TextInput
         {...rest}
         multiline={multiline}
@@ -98,7 +99,7 @@ export function SelectModal({
               <T v="heading" color={colors.textoSuave}>✕</T>
             </Pressable>
           </View>
-          {options.length > 6 ? <Box value={q} onChangeText={setQ} placeholder="Buscar…" autoCorrect={false} /> : null}
+          {options.length > 6 ? <Box value={q} onChangeText={setQ} placeholder="Buscar…" autoCorrect={false} prefix={<Icon name="search" size={19} />} /> : null}
           <ScrollView style={{ maxHeight: 380 }} keyboardShouldPersistTaps="handled">
             {loading ? (
               <Loading />

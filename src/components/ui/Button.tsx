@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { colors, radius } from '@/src/constants/theme';
 import { T } from './Text';
+import { Icon } from './Icon';
 
 type Variant = 'primary' | 'secondary' | 'danger' | 'ghost';
 
@@ -45,7 +46,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'md', icon,
         <ActivityIndicator color={p.fg} />
       ) : (
         <View style={s.row}>
-          {icon ? <T v="bodyStrong" style={{ fontSize: size === 'sm' ? 14 : 16 }}>{icon}</T> : null}
+          {icon && /^[a-z-]+$/.test(icon) ? <Icon name={icon as any} size={size === 'sm' ? 17 : 19} /> : null}
           <T v={size === 'sm' ? 'label' : 'bodyStrong'} color={p.fg}>{label}</T>
         </View>
       )}

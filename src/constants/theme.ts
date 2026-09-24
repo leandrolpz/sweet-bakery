@@ -4,20 +4,20 @@
  */
 export const colors = {
   // Chocolate (menu lateral, textos)
-  cacau: '#3A1F24',
-  cacauClaro: '#4E2C32',
-  cacauLinha: '#65424A',
-  noCacau: '#F7E3E9',
-  noCacauSuave: '#C9A7B0',
+  cacau: '#684750',
+  cacauClaro: '#805B65',
+  cacauLinha: '#A37C87',
+  noCacau: '#FFF7F8',
+  noCacauSuave: '#E5C8D0',
 
   // Morango (cor principal, toldo)
-  morango: '#C92F60',
-  morangoEscuro: '#A3204A',
-  morangoSuave: '#FFE3EB',
-  toldo: '#FFD1DF',
+  morango: '#D86687',
+  morangoEscuro: '#B74C6B',
+  morangoSuave: '#FBE5EC',
+  toldo: '#F6C6D4',
 
   // Superfícies
-  chantilly: '#FFF6F8',
+  chantilly: '#FFFAF7',
   superficie: '#FFFFFF',
   linha: '#F1D9E0',
   campo: '#E2C4CE',
