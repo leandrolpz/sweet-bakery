@@ -6,7 +6,21 @@
     "scheme": "sweetbakery",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "plugins": ["expo-router"],
-    "web": { "bundler": "metro", "output": "single" }
+    "plugins": [
+      "expo-router"
+    ],
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2482bd5a-3040-443f-8ad3-b070b4372e1c"
+      }
+    },
+    "android": {
+      "package": "com.leandro_penha.sweetbakery"
+    }
   }
 }
